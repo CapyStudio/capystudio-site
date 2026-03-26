@@ -1,0 +1,105 @@
+---
+import '../../../styles/global.css';
+
+const TREE_URL = "https://api.github.com/repos/CapyStudio/CapyBets/git/trees/main?recursive=1";
+
+const res = await fetch(TREE_URL);
+const data = await res.json();
+
+const digestFiles: string[] = (data.tree ?? [])
+  .map((f: { path: string }) => f.path)
+  .filter((p: string) => /^daily-digests\/.+\/.+\.md$/.test(p));
+
+// Group by topic
+const topicMap: Record<string, string[]> = {};
+for (const path of digestFiles) {
+  const parts = path.split("/");
+  const topic = parts[1];
+  const filename = parts[2];
+  // filename: <topic>-YYYY-MM-DD.md
+  const date = filename.replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
+  if (!topicMap[topic]) topicMap[topic] = [];
+  topicMap[topic].push(date);
+}
+
+const topics = Object.entries(topicMap).map(([topic, dates]) => {
+  const sorted = [...dates].sort().reverse();
+  return {
+    topic,
+    label: topic.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+    count: dates.length,
+    latest: sorted[0],
+  };
+}).sort((a, b) => a.label.localeCompare(b.label));
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>CapyBets Research — CapyStudio</title>
+    <meta name="description" content="Daily macro digests and investment research" />
+  </head>
+  <body class="bg-neutral-950 text-neutral-100 min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- Header -->
+    <header class="px-6 py-5 flex items-center justify-between border-b border-neutral-800">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <img src="/logo.jpg" alt="CapyStudio" width="36" height="36" class="rounded-md" />
+        <span class="text-base font-semibold tracking-tight text-neutral-100 group-hover:text-white transition-colors">
+          CapyStudio
+        </span>
+      </a>
+      <nav class="hidden sm:flex items-center gap-6 text-sm text-neutral-400">
+        <a href="/#work" class="hover:text-neutral-100 transition-colors">Work</a>
+        <a href="/#about" class="hover:text-neutral-100 transition-colors">About</a>
+        <a href="/#contact" class="hover:text-neutral-100 transition-colors">Contact</a>
+      </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 px-6 py-16 max-w-5xl mx-auto w-full">
+      <p class="text-sm font-medium text-amber-400 tracking-widest uppercase mb-4">
+        CapyBets
+      </p>
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-neutral-100 leading-tight mb-3">
+        Research
+      </h1>
+      <p class="text-lg text-neutral-400 mb-12">
+        Daily macro digests and investment research
+      </p>
+
+      {topics.length === 0 ? (
+        <p class="text-neutral-500">No digests found.</p>
+      ) : (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {topics.map(({ topic, label, count, latest }) => (
+            <a
+              href={`/capybets/research/${topic}`}
+              class="group block border border-neutral-800 rounded-xl p-6 hover:border-neutral-600 hover:bg-neutral-900 transition-all"
+            >
+              <h2 class="text-lg font-semibold text-neutral-100 group-hover:text-amber-400 transition-colors mb-2">
+                {label}
+              </h2>
+              <p class="text-sm text-neutral-500 mb-4">
+                {count} {count === 1 ? "digest" : "digests"}
+              </p>
+              <p class="text-xs text-neutral-600">
+                Latest: <span class="text-neutral-400">{latest}</span>
+              </p>
+            </a>
+          ))}
+        </div>
+      )}
+    </main>
+
+    <!-- Footer -->
+    <footer class="px-6 py-5 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-neutral-500">
+      <span>© {new Date().getFullYear()} CapyStudio. All rights reserved.</span>
+      <span class="text-neutral-700">Built with Astro</span>
+    </footer>
+
+  </body>
+</html>

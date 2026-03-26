@@ -1,0 +1,173 @@
+---
+import '../../../../styles/global.css';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+  const TREE_URL = "https://api.github.com/repos/CapyStudio/CapyBets/git/trees/main?recursive=1";
+  const res = await fetch(TREE_URL);
+  const data = await res.json();
+
+  const digestFiles: string[] = (data.tree ?? [])
+    .map((f: { path: string }) => f.path)
+    .filter((p: string) => /^daily-digests\/.+\/.+\.md$/.test(p));
+
+  return digestFiles.map((filePath) => {
+    const parts = filePath.split("/");
+    const topic = parts[1];
+    const filename = parts[2];
+    const date = filename.replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
+    return {
+      params: { topic, date },
+      props: { filePath, topic, date },
+    };
+  });
+}
+
+const CONTENTS_BASE = "https://api.github.com/repos/CapyStudio/CapyBets/contents";
+
+const { filePath, topic, date } = Astro.props;
+const label = topic.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+
+const fileRes = await fetch(`${CONTENTS_BASE}/${filePath}`);
+const fileData = await fileRes.json();
+const raw = Buffer.from(fileData.content, "base64").toString("utf-8");
+const html = await marked(raw);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{label} — {date} — CapyBets Research</title>
+    <meta name="description" content={`${label} digest for ${date}`} />
+    <style>
+      .prose {
+        color: #d4d4d4;
+        line-height: 1.75;
+        font-size: 1rem;
+      }
+      .prose h1,
+      .prose h2,
+      .prose h3,
+      .prose h4 {
+        color: #fafafa;
+        font-weight: 700;
+        line-height: 1.3;
+        margin-top: 1.75em;
+        margin-bottom: 0.5em;
+      }
+      .prose h1 { font-size: 1.875rem; }
+      .prose h2 { font-size: 1.5rem; }
+      .prose h3 { font-size: 1.25rem; }
+      .prose h4 { font-size: 1.125rem; }
+      .prose p { margin-top: 0; margin-bottom: 1em; }
+      .prose a {
+        color: #fbbf24;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .prose a:hover { color: #fcd34d; }
+      .prose ul,
+      .prose ol {
+        padding-left: 1.5em;
+        margin-bottom: 1em;
+      }
+      .prose ul { list-style-type: disc; }
+      .prose ol { list-style-type: decimal; }
+      .prose li { margin-bottom: 0.25em; }
+      .prose blockquote {
+        border-left: 3px solid #404040;
+        padding-left: 1em;
+        margin-left: 0;
+        color: #a3a3a3;
+        font-style: italic;
+      }
+      .prose code {
+        background: #1a1a1a;
+        border: 1px solid #262626;
+        border-radius: 4px;
+        padding: 0.15em 0.4em;
+        font-size: 0.875em;
+        color: #fbbf24;
+      }
+      .prose pre {
+        background: #0a0a0a;
+        border: 1px solid #262626;
+        border-radius: 8px;
+        padding: 1em 1.25em;
+        overflow-x: auto;
+        margin-bottom: 1em;
+      }
+      .prose pre code {
+        background: none;
+        border: none;
+        padding: 0;
+        color: #d4d4d4;
+        font-size: 0.875rem;
+      }
+      .prose hr {
+        border: none;
+        border-top: 1px solid #262626;
+        margin: 2em 0;
+      }
+      .prose strong { color: #fafafa; font-weight: 600; }
+      .prose table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1em;
+        font-size: 0.9rem;
+      }
+      .prose th {
+        border: 1px solid #404040;
+        padding: 0.5em 0.75em;
+        background: #171717;
+        color: #fafafa;
+        font-weight: 600;
+        text-align: left;
+      }
+      .prose td {
+        border: 1px solid #262626;
+        padding: 0.5em 0.75em;
+      }
+    </style>
+  </head>
+  <body class="bg-neutral-950 text-neutral-100 min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- Header -->
+    <header class="px-6 py-5 flex items-center justify-between border-b border-neutral-800">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <img src="/logo.jpg" alt="CapyStudio" width="36" height="36" class="rounded-md" />
+        <span class="text-base font-semibold tracking-tight text-neutral-100 group-hover:text-white transition-colors">
+          CapyStudio
+        </span>
+      </a>
+      <nav class="hidden sm:flex items-center gap-6 text-sm text-neutral-400">
+        <a href="/#work" class="hover:text-neutral-100 transition-colors">Work</a>
+        <a href="/#about" class="hover:text-neutral-100 transition-colors">About</a>
+        <a href="/#contact" class="hover:text-neutral-100 transition-colors">Contact</a>
+      </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 px-6 py-16 max-w-3xl mx-auto w-full">
+      <nav class="flex items-center gap-2 text-sm text-neutral-500 mb-8 flex-wrap">
+        <a href="/capybets/research" class="hover:text-amber-400 transition-colors">Research</a>
+        <span>/</span>
+        <a href={`/capybets/research/${topic}`} class="hover:text-amber-400 transition-colors">{label}</a>
+        <span>/</span>
+        <span class="text-neutral-300">{date}</span>
+      </nav>
+
+      <div class="prose" set:html={html} />
+    </main>
+
+    <!-- Footer -->
+    <footer class="px-6 py-5 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-neutral-500">
+      <span>© {new Date().getFullYear()} CapyStudio. All rights reserved.</span>
+      <span class="text-neutral-700">Built with Astro</span>
+    </footer>
+
+  </body>
+</html>
