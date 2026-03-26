@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/capybets",
+      "permanent": false,
+      "has": [
+        {
+          "type": "host",
+          "value": "capybets.capystudio.co"
+        }
+      ]
+    }
+  ]
+}
