@@ -1,0 +1,84 @@
+---
+import '../../styles/global.css';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>CapyBets — STONKS only go up</title>
+    <meta name="description" content="High conviction macro plays. Daily research. STONKS only go up." />
+    <style>
+      @keyframes glow-pulse {
+        0%, 100% { box-shadow: 0 0 12px 2px #22c55e99, 0 0 32px 4px #22c55e44; }
+        50% { box-shadow: 0 0 20px 4px #22c55ebb, 0 0 48px 8px #22c55e66; }
+      }
+      .glow-btn {
+        animation: glow-pulse 2s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body class="bg-neutral-950 text-neutral-100 min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- Header -->
+    <header class="px-6 py-5 flex items-center justify-between border-b border-neutral-800">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <img src="/logo.jpg" alt="CapyStudio" width="36" height="36" class="rounded-md" />
+        <span class="text-base font-semibold tracking-tight text-neutral-100 group-hover:text-white transition-colors">
+          CapyStudio
+        </span>
+      </a>
+      <nav class="hidden sm:flex items-center gap-6 text-sm text-neutral-400">
+        <a href="/work" class="hover:text-neutral-100 transition-colors">Work</a>
+        <a href="#about" class="hover:text-neutral-100 transition-colors">About</a>
+        <a href="#contact" class="hover:text-neutral-100 transition-colors">Contact</a>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <main class="flex-1 flex items-center justify-center px-6 py-20">
+      <div class="max-w-2xl w-full flex flex-col items-center text-center gap-6">
+
+        <!-- Logo -->
+        <img
+          src="/capybets-logo.jpg"
+          alt="CapyBets"
+          width="200"
+          height="200"
+          style="image-rendering: pixelated;"
+          class="rounded-xl"
+        />
+
+        <!-- Headline -->
+        <h1 class="text-5xl sm:text-6xl font-bold tracking-tight text-red-500 leading-tight">
+          CapyBets
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="text-lg sm:text-xl text-neutral-300 leading-relaxed max-w-lg">
+          High conviction macro plays. Daily research.<br />
+          <span class="text-green-400 font-semibold">STONKS only go up.</span>
+        </p>
+
+        <!-- CTA -->
+        <a
+          href="/capybets/research"
+          class="glow-btn inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-neutral-950 text-base font-bold px-8 py-3.5 rounded-lg transition-colors mt-2"
+          style="font-family: 'Courier New', Courier, monospace;"
+        >
+          📈 View Research
+        </a>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="px-6 py-5 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-neutral-500">
+      <span>© {new Date().getFullYear()} CapyStudio. All rights reserved.</span>
+      <span class="text-neutral-700">Built with Astro</span>
+    </footer>
+
+  </body>
+</html>
