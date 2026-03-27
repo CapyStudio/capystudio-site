@@ -1,14 +1,10 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
-      "destination": "/capybets",
-      "has": [
-        {
-          "type": "host",
-          "value": "capybets.capystudio.co"
-        }
-      ]
+      "has": [{"type": "host", "value": "capybets.capystudio.co"}],
+      "destination": "https://capybets.capystudio.co/capybets",
+      "permanent": false
     }
   ]
 }
