@@ -3,26 +3,29 @@ import '../../../styles/global.css';
 
 const { topic } = Astro.params;
 
+if (!topic) return Astro.redirect("/capybets/research");
+
 const TREE_URL = "https://api.github.com/repos/CapyStudio/CapyBets/git/trees/main?recursive=1";
 const res = await fetch(TREE_URL);
 const data = await res.json();
 
 const digestFiles: string[] = (data.tree ?? [])
   .map((f: { path: string }) => f.path)
-  .filter((p: string) => new RegExp(`^daily-digests/${topic}/.+\\.md$`).test(p));
+  .filter((p: string) => /^daily-digests\/.+\/.+\.md$/.test(p));
 
-if (digestFiles.length === 0) {
-  return Astro.redirect("/capybets/research");
-}
-
-const digests = digestFiles.map((filePath) => {
-  const parts = filePath.split("/");
+const entries: { date: string; path: string }[] = [];
+for (const path of digestFiles) {
+  const parts = path.split("/");
+  if (parts[1] !== topic) continue;
   const filename = parts[2];
   const date = filename.replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
-  return { date, filePath };
-}).sort((a, b) => b.date.localeCompare(a.date));
+  entries.push({ date, path });
+}
 
-const label = (topic as string).replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+if (entries.length === 0) return Astro.redirect("/capybets/research");
+
+const label = topic.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+const digests = [...entries].sort((a, b) => b.date.localeCompare(a.date));
 ---
 
 <html lang="en">

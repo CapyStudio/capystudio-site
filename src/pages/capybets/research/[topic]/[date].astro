@@ -4,6 +4,8 @@ import { marked } from 'marked';
 
 const { topic, date } = Astro.params;
 
+if (!topic || !date) return Astro.redirect("/capybets/research");
+
 const TREE_URL = "https://api.github.com/repos/CapyStudio/CapyBets/git/trees/main?recursive=1";
 const treeRes = await fetch(TREE_URL);
 const treeData = await treeRes.json();
@@ -12,16 +14,16 @@ const digestFiles: string[] = (treeData.tree ?? [])
   .map((f: { path: string }) => f.path)
   .filter((p: string) => /^daily-digests\/.+\/.+\.md$/.test(p));
 
+// Find the matching file for this topic + date
 const filePath = digestFiles.find((p) => {
   const parts = p.split("/");
-  const fileTopic = parts[1];
-  const fileDate = parts[2].replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
-  return fileTopic === topic && fileDate === date;
+  const t = parts[1];
+  const filename = parts[2];
+  const d = filename.replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
+  return t === topic && d === date;
 });
 
-if (!filePath) {
-  return Astro.redirect(`/capybets/research/${topic}`);
-}
+if (!filePath) return Astro.redirect(`/capybets/research`);
 
 const CONTENTS_BASE = "https://api.github.com/repos/CapyStudio/CapyBets/contents";
 const fileRes = await fetch(`${CONTENTS_BASE}/${filePath}`);
@@ -29,7 +31,7 @@ const fileData = await fileRes.json();
 const raw = Buffer.from(fileData.content, "base64").toString("utf-8");
 const html = await marked(raw);
 
-const label = (topic as string).replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+const label = topic.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
 ---
 
 <html lang="en">
