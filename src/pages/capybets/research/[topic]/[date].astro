@@ -1,9 +1,6 @@
 ---
 import '../../../../styles/global.css';
 import { marked } from 'marked';
-Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
-Astro.response.headers.set('CDN-Cache-Control', 'no-store');
-Astro.response.headers.set('Vercel-CDN-Cache-Control', 'no-store');
 
 const { topic, date } = Astro.params;
 
