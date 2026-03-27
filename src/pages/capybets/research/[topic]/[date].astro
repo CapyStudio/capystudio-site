@@ -1,38 +1,35 @@
 ---
-export const prerender = true;
 import '../../../../styles/global.css';
 import { marked } from 'marked';
 
-export async function getStaticPaths() {
-  const TREE_URL = "https://api.github.com/repos/CapyStudio/CapyBets/git/trees/main?recursive=1";
-  const res = await fetch(TREE_URL);
-  const data = await res.json();
+const { topic, date } = Astro.params;
 
-  const digestFiles: string[] = (data.tree ?? [])
-    .map((f: { path: string }) => f.path)
-    .filter((p: string) => /^daily-digests\/.+\/.+\.md$/.test(p));
+const TREE_URL = "https://api.github.com/repos/CapyStudio/CapyBets/git/trees/main?recursive=1";
+const treeRes = await fetch(TREE_URL);
+const treeData = await treeRes.json();
 
-  return digestFiles.map((filePath) => {
-    const parts = filePath.split("/");
-    const topic = parts[1];
-    const filename = parts[2];
-    const date = filename.replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
-    return {
-      params: { topic, date },
-      props: { filePath, topic, date },
-    };
-  });
+const digestFiles: string[] = (treeData.tree ?? [])
+  .map((f: { path: string }) => f.path)
+  .filter((p: string) => /^daily-digests\/.+\/.+\.md$/.test(p));
+
+const filePath = digestFiles.find((p) => {
+  const parts = p.split("/");
+  const fileTopic = parts[1];
+  const fileDate = parts[2].replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
+  return fileTopic === topic && fileDate === date;
+});
+
+if (!filePath) {
+  return Astro.redirect(`/capybets/research/${topic}`);
 }
 
 const CONTENTS_BASE = "https://api.github.com/repos/CapyStudio/CapyBets/contents";
-
-const { filePath, topic, date } = Astro.props;
-const label = topic.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
-
 const fileRes = await fetch(`${CONTENTS_BASE}/${filePath}`);
 const fileData = await fileRes.json();
 const raw = Buffer.from(fileData.content, "base64").toString("utf-8");
 const html = await marked(raw);
+
+const label = (topic as string).replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
 ---
 
 <html lang="en">
