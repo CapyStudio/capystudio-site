@@ -8,6 +8,11 @@ import '../styles/global.css';
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
+    <script is:inline>
+      if (window.location.hostname === 'capybets.capystudio.co') {
+        window.location.replace('/capybets');
+      }
+    </script>
     <meta name="generator" content={Astro.generator} />
     <title>CapyStudio</title>
     <meta name="description" content="CapyStudio — a creative studio that builds things." />
