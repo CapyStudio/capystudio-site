@@ -1,37 +1,21 @@
 ---
 import '../../../../styles/global.css';
-import { marked } from 'marked';
+import { labelForTopic, renderDigestHtml } from '../../../../lib/capybetsResearch';
 
 const { topic, date } = Astro.params;
 
 if (!topic || !date) return Astro.redirect("/capybets/research");
 
-const TREE_URL = "https://api.github.com/repos/CapyStudio/CapyBets/git/trees/main?recursive=1";
-const treeRes = await fetch(TREE_URL);
-const treeData = await treeRes.json();
+let html: string | null = null;
+try {
+  html = await renderDigestHtml(topic, date);
+} catch (error) {
+  console.error(`Failed to load CapyBets research digest: ${topic}/${date}`, error);
+}
 
-const digestFiles: string[] = (treeData.tree ?? [])
-  .map((f: { path: string }) => f.path)
-  .filter((p: string) => /^daily-digests\/.+\/.+\.md$/.test(p));
+if (!html) return Astro.redirect(`/capybets/research`);
 
-// Find the matching file for this topic + date
-const filePath = digestFiles.find((p) => {
-  const parts = p.split("/");
-  const t = parts[1];
-  const filename = parts[2];
-  const d = filename.replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
-  return t === topic && d === date;
-});
-
-if (!filePath) return Astro.redirect(`/capybets/research`);
-
-const CONTENTS_BASE = "https://api.github.com/repos/CapyStudio/CapyBets/contents";
-const fileRes = await fetch(`${CONTENTS_BASE}/${filePath}`);
-const fileData = await fileRes.json();
-const raw = Buffer.from(fileData.content, "base64").toString("utf-8");
-const html = await marked(raw);
-
-const label = topic.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+const label = labelForTopic(topic);
 ---
 
 <html lang="en">

@@ -1,36 +1,16 @@
 ---
 import '../../../styles/global.css';
+import { listResearchTopics } from '../../../lib/capybetsResearch';
 
-const TREE_URL = "https://api.github.com/repos/CapyStudio/CapyBets/git/trees/main?recursive=1";
+let topics = [];
+let loadError: string | null = null;
 
-const res = await fetch(TREE_URL);
-const data = await res.json();
-
-const digestFiles: string[] = (data.tree ?? [])
-  .map((f: { path: string }) => f.path)
-  .filter((p: string) => /^daily-digests\/.+\/.+\.md$/.test(p));
-
-// Group by topic
-const topicMap: Record<string, string[]> = {};
-for (const path of digestFiles) {
-  const parts = path.split("/");
-  const topic = parts[1];
-  const filename = parts[2];
-  // filename: <topic>-YYYY-MM-DD.md
-  const date = filename.replace(/^.+?-(\d{4}-\d{2}-\d{2})\.md$/, "$1");
-  if (!topicMap[topic]) topicMap[topic] = [];
-  topicMap[topic].push(date);
+try {
+  topics = await listResearchTopics();
+} catch (error) {
+  console.error('Failed to load CapyBets research topics', error);
+  loadError = 'Research digests are temporarily unavailable.';
 }
-
-const topics = Object.entries(topicMap).map(([topic, dates]) => {
-  const sorted = [...dates].sort().reverse();
-  return {
-    topic,
-    label: topic.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
-    count: dates.length,
-    latest: sorted[0],
-  };
-}).sort((a, b) => a.label.localeCompare(b.label));
 ---
 
 <html lang="en">
@@ -74,7 +54,9 @@ const topics = Object.entries(topicMap).map(([topic, dates]) => {
         Daily macro digests and investment research
       </p>
 
-      {topics.length === 0 ? (
+      {loadError ? (
+        <p class="text-neutral-500">{loadError}</p>
+      ) : topics.length === 0 ? (
         <p class="text-neutral-500">No digests found.</p>
       ) : (
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
