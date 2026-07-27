@@ -1,0 +1,28 @@
+{
+  "title": "What we're working on",
+  "projects": [
+    {
+      "name": "project-retrace",
+      "description": "A debugger for AI agent traces. When an agent run breaks, retrace shows you why: load the trace, read the conversation, and get pointed at the failed tools, stalls, silent errors, and runaway context that explain it. Reads six trace formats, works in the browser for people and over a CLI for scripts and agents. Open source under MIT.",
+      "status": "Open source under MIT",
+      "links": [
+        {
+          "label": "github.com/capppybara/project-retrace",
+          "url": "https://github.com/capppybara/project-retrace"
+        }
+      ]
+    },
+    {
+      "name": "agent-bench-runner",
+      "description": "Runs agent benchmarks and collects the traces they produce, so every score comes with the evidence behind it.",
+      "status": "In progress",
+      "links": []
+    },
+    {
+      "name": "project-ethos",
+      "description": "A framework for evaluating how agents behave: whether they seek context, disclose assumptions, and cite honestly. Trustworthy behavior makes better agents.",
+      "status": "In progress",
+      "links": []
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import '../styles/global.css';
+import work from '../data/work.json';
 ---
 
 <html lang="en">
@@ -8,24 +9,57 @@ import '../styles/global.css';
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
-    <title>CapyStudio — Coming Soon</title>
-    <meta name="description" content="Something is cooking at CapyStudio." />
+    <title>CapyStudio — Work</title>
+    <meta name="description" content="What CapyStudio is working on." />
   </head>
-  <body class="bg-neutral-950 text-neutral-100 min-h-screen flex flex-col items-center justify-center px-6">
-    <div class="flex flex-col items-center text-center max-w-md">
-      <img src="/logo.jpg" alt="CapyStudio" width="80" height="80" class="rounded-2xl mb-8" />
-      <p class="text-sm font-medium text-amber-400 tracking-widest uppercase mb-4">
-        Let us cook
-      </p>
-      <h1 class="text-4xl font-bold tracking-tight text-neutral-100 mb-4">
-        Let us cook.
-      </h1>
-      <p class="text-neutral-400 leading-relaxed">
-        We're working on something worth showing. Check back soon.
-      </p>
-      <a href="/" class="mt-8 text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
-        ← Back home
+  <body class="bg-neutral-950 text-neutral-100 min-h-screen flex flex-col font-sans antialiased">
+    <header class="px-6 py-5 flex items-center justify-between border-b border-neutral-800">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <img src="/logo.jpg" alt="CapyStudio" width="36" height="36" class="rounded-md" />
+        <span class="text-base font-semibold tracking-tight text-neutral-100 group-hover:text-white transition-colors">CapyStudio</span>
       </a>
-    </div>
+      <nav class="hidden sm:flex items-center gap-6 text-sm text-neutral-400">
+        <a href="/" class="hover:text-neutral-100 transition-colors">Home</a>
+        <a href="/#about" class="hover:text-neutral-100 transition-colors">About</a>
+        <a href="/#contact" class="hover:text-neutral-100 transition-colors">Contact</a>
+      </nav>
+    </header>
+
+    <main class="flex-1 px-6 py-20 sm:py-28">
+      <div class="max-w-5xl mx-auto">
+        <p class="text-sm font-medium uppercase tracking-[0.3em] text-amber-300 mb-3">Work</p>
+        <h1 class="text-4xl sm:text-6xl font-bold tracking-tight mb-12 bg-gradient-to-r from-amber-300 via-amber-400 to-neutral-100 bg-clip-text text-transparent">
+          {work.title}
+        </h1>
+
+        <div class="grid gap-5">
+          {work.projects.map((project) => (
+            <article class="rounded-2xl border border-neutral-800 bg-neutral-900/35 p-6 sm:p-7">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <h2 class="text-2xl font-semibold tracking-tight text-neutral-50">{project.name}</h2>
+                <span class="w-fit rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-amber-200">
+                  {project.status}
+                </span>
+              </div>
+              <p class="mt-4 text-neutral-300 leading-7">{project.description}</p>
+              {project.links.length > 0 && (
+                <div class="mt-5 flex flex-wrap gap-3">
+                  {project.links.map((link) => (
+                    <a href={link.url} class="text-sm font-medium text-amber-300 hover:text-amber-200 transition-colors" target="_blank" rel="noreferrer">
+                      {link.label} →
+                    </a>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </main>
+
+    <footer class="px-6 py-5 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-neutral-500">
+      <span>© {new Date().getFullYear()} CapyStudio. All rights reserved.</span>
+      <a href="/" class="text-neutral-500 hover:text-neutral-300 transition-colors">← Back home</a>
+    </footer>
   </body>
 </html>

@@ -1,9 +1,11 @@
 ---
 export const prerender = true;
 import '../styles/global.css';
+import whoWeAre from '../data/who-we-are.json';
+import work from '../data/work.json';
 ---
 
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -15,12 +17,12 @@ import '../styles/global.css';
     </script>
     <meta name="generator" content={Astro.generator} />
     <title>CapyStudio</title>
-    <meta name="description" content="CapyStudio — we’re cooking." />
+    <meta name="description" content="CapyStudio is a small studio that builds useful tools for agent transparency, evaluation, and human judgment." />
   </head>
   <body class="bg-neutral-950 text-neutral-100 min-h-screen flex flex-col font-sans antialiased">
 
     <!-- Header -->
-    <header class="px-6 py-5 flex items-center justify-between border-b border-neutral-800">
+    <header class="px-6 py-5 flex items-center justify-between border-b border-neutral-800 sticky top-0 z-10 bg-neutral-950/90 backdrop-blur">
       <a href="/" class="flex items-center gap-2.5 group">
         <img src="/logo.jpg" alt="CapyStudio" width="36" height="36" class="rounded-md" />
         <span class="text-base font-semibold tracking-tight text-neutral-100 group-hover:text-white transition-colors">
@@ -28,24 +30,93 @@ import '../styles/global.css';
         </span>
       </a>
       <nav class="hidden sm:flex items-center gap-6 text-sm text-neutral-400">
-        <a href="/work" class="hover:text-neutral-100 transition-colors">Work</a>
+        <a href="#work" class="hover:text-neutral-100 transition-colors">Work</a>
         <a href="#about" class="hover:text-neutral-100 transition-colors">About</a>
-        <a href="#contact" class="hover:text-neutral-100 transition-colors">Contact</a>
+        <a href="#contact" class="rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-amber-200 hover:border-amber-300/60 hover:bg-amber-300/15 hover:text-amber-100 transition-colors">Contact us</a>
       </nav>
     </header>
 
-    <!-- Hero -->
-    <main class="flex-1 flex items-center justify-center px-6 py-24">
-      <div class="max-w-2xl w-full">
-        <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-tight mb-8 bg-gradient-to-r from-amber-300 via-amber-400 to-neutral-100 bg-clip-text text-transparent">
-          We’re cooking
-        </h1>
-        <img
-          src="/were-cooking.gif"
-          alt="Cooking animation"
-          class="w-80 max-w-full rounded-xl border border-neutral-800 shadow-2xl"
-        />
-      </div>
+    <main class="flex-1">
+      <!-- Hero -->
+      <section class="px-6 py-24 sm:py-32 border-b border-neutral-900">
+        <div class="max-w-5xl mx-auto grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <div>
+            <p class="text-sm font-medium uppercase tracking-[0.3em] text-amber-300 mb-5">CapyStudio</p>
+            <h1 class="text-5xl sm:text-7xl font-bold tracking-tight leading-tight mb-8 bg-gradient-to-r from-amber-300 via-amber-400 to-neutral-100 bg-clip-text text-transparent">
+              Useful tools for honest automation.
+            </h1>
+            <p class="text-lg sm:text-xl text-neutral-300 leading-8 max-w-2xl">
+              We build around the parts of automation that matter most: making agent work legible, measuring behavior with evidence, and keeping humans where judgment counts.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-3 shadow-2xl shadow-amber-950/20">
+            <img
+              src="/were-cooking.gif"
+              alt="Cooking animation"
+              class="w-full rounded-xl border border-neutral-800"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Work -->
+      <section id="work" class="px-6 py-20 sm:py-28 border-b border-neutral-900 scroll-mt-24">
+        <div class="max-w-5xl mx-auto">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-10">
+            <div>
+              <p class="text-sm font-medium uppercase tracking-[0.3em] text-amber-300 mb-3">Work</p>
+              <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">{work.title}</h2>
+            </div>
+          </div>
+
+          <div class="grid gap-5">
+            {work.projects.map((project) => (
+              <article class="rounded-2xl border border-neutral-800 bg-neutral-900/35 p-6 sm:p-7 hover:border-neutral-700 transition-colors">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <h3 class="text-2xl font-semibold tracking-tight text-neutral-50">{project.name}</h3>
+                  <span class="w-fit rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-amber-200">
+                    {project.status}
+                  </span>
+                </div>
+                <p class="mt-4 text-neutral-300 leading-7">{project.description}</p>
+                {project.links.length > 0 && (
+                  <div class="mt-5 flex flex-wrap gap-3">
+                    {project.links.map((link) => (
+                      <a href={link.url} class="text-sm font-medium text-amber-300 hover:text-amber-200 transition-colors" target="_blank" rel="noreferrer">
+                        {link.label} →
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section id="about" class="px-6 py-20 sm:py-28 border-b border-neutral-900 scroll-mt-24">
+        <div class="max-w-5xl mx-auto grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
+          <div>
+            <p class="text-sm font-medium uppercase tracking-[0.3em] text-amber-300 mb-3">About</p>
+            <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">{whoWeAre.title}</h2>
+          </div>
+          <div class="space-y-6 text-lg text-neutral-300 leading-8">
+            {whoWeAre.statements.map((statement) => <p>{statement}</p>)}
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section id="contact" class="px-6 py-20 sm:py-28 scroll-mt-24">
+        <div class="max-w-5xl mx-auto rounded-2xl border border-neutral-800 bg-gradient-to-br from-neutral-900 to-neutral-950 p-8 sm:p-10">
+          <p class="text-sm font-medium uppercase tracking-[0.3em] text-amber-300 mb-4">Contact</p>
+          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight mb-5">Want to talk?</h2>
+          <p class="text-neutral-300 leading-7 mb-6 max-w-2xl">
+            Reach CapyStudio at <a href="mailto:hello@capystudio.co" class="text-amber-300 hover:text-amber-200 transition-colors">hello@capystudio.co</a>.
+          </p>
+        </div>
+      </section>
     </main>
 
     <!-- Footer -->
